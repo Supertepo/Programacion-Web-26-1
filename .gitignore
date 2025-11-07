@@ -1,0 +1,33 @@
+# Maven build output
+target/
+
+# Compiled class files
+*.class
+
+# Maven artifact files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# Log files
+*.log
+
+# IDE-specific files (e.g., IntelliJ IDEA, Eclipse)
+.idea/
+.project
+.classpath
+.settings/
+*.iml
+.DS_Store # macOS specific
+Thumbs.db # Windows specific
+
+# Maven Wrapper files (optional, depending on project setup)
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+.mvn
+
+# Other temporary or generated files
+tmp/
+build/
