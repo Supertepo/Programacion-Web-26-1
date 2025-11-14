@@ -2,9 +2,33 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Getting Started: Serving Web Content</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
-<p th:text="|Hello, ${name}!|" />
+<div class="title"><h1>Iniciar sesión</h1></div>
+<div class="form-container">
+    <form action="/" th:object="${loginDto}" method="post">
+        <div class="form-row form-title">
+            <h1>Ingresar al sistema</h1>
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label class="required">Usuario</label></div>
+            <div class="form-input">
+                <input type="text" name="username" th:field="*{username}"></input>
+                <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label>Contraseña</label></div>
+            <div class="form-input">
+                <input type="password" name="password" th:field="*{password}"></input>
+                <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <input type="submit" value="Ingresar">
+        </div>
+    </form>
+</div>
 </body>
 </html>
