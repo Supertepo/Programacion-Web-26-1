@@ -1,4 +1,4 @@
-package mx.ipn.upiicsa.web.dto;
+package mx.ipn.upiicsa.web.controlacceso.external.mvc.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
