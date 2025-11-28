@@ -2,6 +2,7 @@ package mx.ipn.upiicsa.web.controlacceso.external.jpa.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mx.ipn.upiicsa.web.controlacceso.internal.bs.entity.Persona;
 
 @Builder
 @AllArgsConstructor
@@ -29,4 +30,14 @@ public class PersonaJpa {
     private GeneroJpa genero;
     @OneToOne(mappedBy = "persona")
     private UsuarioJpa usuario;
+
+    public Persona toEntity() {
+        return Persona.builder()
+                .id(this.id)
+                .idGenero(this.idGenero)
+                .nombre(this.nombre)
+                .primerApellido(this.primerApellido)
+                .segundoApellido(this.segundoApellido)
+                .build();
+    }
 }

@@ -1,6 +1,8 @@
 package mx.ipn.upiicsa.web.controlacceso.external.mvc.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import mx.ipn.upiicsa.web.controlacceso.internal.bs.implemet.LoginBs;
 import mx.ipn.upiicsa.web.controlacceso.external.mvc.dto.LoginDto;
 import mx.ipn.upiicsa.web.controlacceso.internal.input.LoginService;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+@Slf4j
 @Controller
 public class LoginController {
 
@@ -33,14 +36,31 @@ public class LoginController {
     //}
 
     @PostMapping("/")
-    public String login(@Valid @ModelAttribute LoginDto loginDto, BindingResult bindingResult, Model model){
-        System.out.println("USERNAME: " + loginDto.getUsername());
-        System.out.println("PASSWORD: " + loginDto.getPassword());
-
+    public String login(@Valid @ModelAttribute LoginDto loginDto, BindingResult bindingResult, Model model, HttpSession session){
         for(ObjectError errorList : bindingResult.getAllErrors()) {
-            System.out.println("ERROR: "+errorList.getObjectName()+" - "+errorList.getCode()+" - "+errorList.getDefaultMessage());
+            log.info("ERROR: {} - {} - {}",errorList.getObjectName(), errorList.getCode(), errorList.getDefaultMessage());
         }
-        loginService.login(loginDto);
-        return "index";
+        String resultado = null;
+        var resultadoLogin = loginService.login(loginDto);
+        if(resultadoLogin.isRight()){
+            var persona = resultadoLogin.get();
+            log.info("LOGIN EXITOSO");
+            log.info("Persona: {} {} {}", persona.getNombre(),persona.getPrimerApellido(), persona.getSegundoApellido());
+            log.info("Usuario: {} {} {}", persona.getUsuario().getLogin(),persona.getUsuario().getPassword(), persona.getUsuario().getActivo());
+            model.addAttribute("persona", persona);
+            session.setAttribute("persona", persona);
+            resultado = "welcome";
+        } else {
+            log.info("LOGIN NO ENCONTRADO: {}", resultadoLogin.getLeft());
+            //ObjectError error = new ObjectError("peticion","Error, usuario y/o contraseña incorrectos");
+            //bindingResult.addError(error);
+            if(resultadoLogin.getLeft() == 1) {
+                model.addAttribute("errorLogin", "Error, usuario y/o contraseña incorrectos");
+            } else {
+                model.addAttribute("errorLogin", "El usuario está inactivo");
+            }
+            resultado = "index";
+        }
+        return resultado;
     }
 }
