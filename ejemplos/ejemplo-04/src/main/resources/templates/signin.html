@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div class="title"><h1>Iniciar sesión</h1></div>
+<div class="form-container">
+    <form action="/signin" th:object="${signinDto}" method="post">
+        <div class="form-row form-title">
+            <h1>Registrarse</h1>
+        </div>
+        <div>
+            <p th:text="${errorLogin}"></p>
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label class="required">Nombre</label></div>
+            <div class="form-input">
+                <input type="text" th:field="*{nombre}"></input>
+                <p th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="error"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label>Primer apellido</label></div>
+            <div class="form-input">
+                <input type="text" th:field="*{primerApellido}"></input>
+                <p th:if="${#fields.hasErrors('primerApellido')}" th:errors="*{primerApellido}" class="error"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label>Segundo apellido</label></div>
+            <div class="form-input">
+                <input type="text" th:field="*{segundoApellido}"></input>
+                <p th:if="${#fields.hasErrors('segundoApellido')}" th:errors="*{segundoApellido}" class="error"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label>Fecha de nacimiento</label></div>
+            <div class="form-input">
+                <input type="text" th:field="*{fechaNacimiento}"></input>
+                <p th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}" class="error"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label>Genero</label></div>
+            <div class="form-input">
+                <input type="text" th:field="*{idGenero}"></input>
+                <p th:if="${#fields.hasErrors('idGenero')}" th:errors="*{idGenero}" class="error"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label>Login</label></div>
+            <div class="form-input">
+                <input type="text" th:field="*{login}"></input>
+                <p th:if="${#fields.hasErrors('login')}" th:errors="*{login}" class="error"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label>Contraseña</label></div>
+            <div class="form-input">
+                <input type="password" th:field="*{password}"></input>
+                <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <input type="submit" value="Aceptar">
+            <a href="/">Cancelar</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

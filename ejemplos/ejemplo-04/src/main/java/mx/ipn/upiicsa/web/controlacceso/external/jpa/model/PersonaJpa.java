@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import mx.ipn.upiicsa.web.controlacceso.internal.bs.entity.Persona;
 
+import java.time.LocalDate;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,6 +27,8 @@ public class PersonaJpa {
     private String primerApellido;
     @Column(name = "tx_segundo_apellido")
     private String segundoApellido;
+    @Column(name = "fh_nacimiento")
+    private LocalDate fechaNacimiento;
     @ManyToOne
     @JoinColumn(name = "fk_id_genero", referencedColumnName = "id_genero", insertable = false, updatable = false)
     private GeneroJpa genero;
@@ -38,6 +42,17 @@ public class PersonaJpa {
                 .nombre(this.nombre)
                 .primerApellido(this.primerApellido)
                 .segundoApellido(this.segundoApellido)
+                .build();
+    }
+
+    public static PersonaJpa fromEntity(Persona persona) {
+        return PersonaJpa.builder()
+                .id(persona.getId())
+                .idGenero(persona.getIdGenero())
+                .nombre(persona.getNombre())
+                .primerApellido(persona.getPrimerApellido())
+                .segundoApellido(persona.getSegundoApellido())
+                .fechaNacimiento(persona.getFechaNacimiento())
                 .build();
     }
 }

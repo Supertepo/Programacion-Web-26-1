@@ -4,6 +4,8 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import mx.ipn.upiicsa.web.controlacceso.external.mvc.dto.LoginDto;
 import mx.ipn.upiicsa.web.controlacceso.internal.bs.entity.Persona;
+import mx.ipn.upiicsa.web.controlacceso.internal.bs.entity.Signin;
+import mx.ipn.upiicsa.web.controlacceso.internal.bs.entity.Usuario;
 import mx.ipn.upiicsa.web.controlacceso.internal.input.LoginService;
 import mx.ipn.upiicsa.web.controlacceso.internal.output.LoginRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +35,25 @@ public class LoginBs implements LoginService {
             log.info("Error en la autenticación del usuario");
         }
         return resultado;
+    }
+
+    @Override
+    public Either<Integer, Boolean> signin(Signin signin) {
+        // Hacer todas las validaciones de negocio
+        Integer idPersona = loginRepository.savePersona(Persona.builder()
+                        .idGenero(signin.getIdGenero())
+                        .nombre(signin.getNombre())
+                        .primerApellido(signin.getPrimerApellido())
+                        .segundoApellido(signin.getSegundoApellido())
+                        .fechaNacimiento(signin.getFechaNacimiento())
+                .build());
+        loginRepository.saveUsuario(Usuario.builder()
+                        .id(idPersona)
+                        .idRol(1)
+                        .login(signin.getLogin())
+                        .password(signin.getPassword())
+                        .activo(true)
+                .build());
+        return Either.right(true);
     }
 }

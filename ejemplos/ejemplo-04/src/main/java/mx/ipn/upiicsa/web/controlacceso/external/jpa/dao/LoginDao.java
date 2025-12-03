@@ -1,5 +1,8 @@
 package mx.ipn.upiicsa.web.controlacceso.external.jpa.dao;
 
+import mx.ipn.upiicsa.web.controlacceso.external.jpa.model.PersonaJpa;
+import mx.ipn.upiicsa.web.controlacceso.external.jpa.model.UsuarioJpa;
+import mx.ipn.upiicsa.web.controlacceso.external.jpa.repository.PersonaJpaRepository;
 import mx.ipn.upiicsa.web.controlacceso.internal.bs.entity.Persona;
 import mx.ipn.upiicsa.web.controlacceso.internal.bs.entity.Usuario;
 import mx.ipn.upiicsa.web.controlacceso.external.jpa.repository.UsuarioJpaRepository;
@@ -13,6 +16,8 @@ import java.util.Optional;
 public class LoginDao implements LoginRepository {
     @Autowired
     private UsuarioJpaRepository usuarioJpaRepository;
+    @Autowired
+    private PersonaJpaRepository personaJpaRepository;
     
     public Optional<Persona> findByLoginAndPassword(String login, String password) {
         var resultado = usuarioJpaRepository.findByLoginAndPassword(login, password);
@@ -24,5 +29,15 @@ public class LoginDao implements LoginRepository {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Integer savePersona(Persona persona) {
+        return personaJpaRepository.save(PersonaJpa.fromEntity(persona)).getId();
+    }
+
+    @Override
+    public void saveUsuario(Usuario build) {
+        usuarioJpaRepository.save(UsuarioJpa.fromEntity(build));
     }
 }
