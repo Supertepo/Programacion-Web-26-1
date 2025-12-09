@@ -9,4 +9,5 @@ public interface LoginRepository {
     Optional<Persona> findByLoginAndPassword(String login, String password);
     Integer savePersona(Persona build);
     void saveUsuario(Usuario build);
+    boolean existLogin(String login);
 }

@@ -2,6 +2,7 @@ package mx.ipn.upiicsa.web.controlacceso.internal.bs.implemet;
 
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
+import mx.ipn.upiicsa.web.controlacceso.external.jpa.dao.LoginDao;
 import mx.ipn.upiicsa.web.controlacceso.external.mvc.dto.LoginDto;
 import mx.ipn.upiicsa.web.controlacceso.internal.bs.entity.Persona;
 import mx.ipn.upiicsa.web.controlacceso.internal.bs.entity.Signin;
@@ -11,6 +12,8 @@ import mx.ipn.upiicsa.web.controlacceso.internal.output.LoginRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Optional;
 
 @Slf4j
@@ -18,6 +21,8 @@ import java.util.Optional;
 public class LoginBs implements LoginService {
     @Autowired
     private LoginRepository loginRepository;
+    @Autowired
+    private LoginDao loginDao;
 
     public Either<Integer, Persona> login(LoginDto login) {
         var resultadoLogin = loginRepository.findByLoginAndPassword(login.getUsername(), login.getPassword());
@@ -39,21 +44,46 @@ public class LoginBs implements LoginService {
 
     @Override
     public Either<Integer, Boolean> signin(Signin signin) {
+        Either<Integer, Boolean> resultado;
         // Hacer todas las validaciones de negocio
-        Integer idPersona = loginRepository.savePersona(Persona.builder()
-                        .idGenero(signin.getIdGenero())
-                        .nombre(signin.getNombre())
-                        .primerApellido(signin.getPrimerApellido())
-                        .segundoApellido(signin.getSegundoApellido())
-                        .fechaNacimiento(signin.getFechaNacimiento())
-                .build());
-        loginRepository.saveUsuario(Usuario.builder()
-                        .id(idPersona)
-                        .idRol(1)
-                        .login(signin.getLogin())
-                        .password(signin.getPassword())
-                        .activo(true)
-                .build());
-        return Either.right(true);
+        /**
+         * 1. Que la persona que se quiere registrar sea mayor de edad
+         * 2. Que el login que desea usar la persona no esté registrado previamente
+         */
+        if(!validateRN003(signin.getFechaNacimiento())) {
+            resultado = Either.left(3);
+        } else if(validateRN004(signin.getLogin())){
+            resultado = Either.left(4);
+        } else {
+            Integer idPersona = loginRepository.savePersona(Persona.builder()
+                    .idGenero(signin.getIdGenero())
+                    .nombre(signin.getNombre())
+                    .primerApellido(signin.getPrimerApellido())
+                    .segundoApellido(signin.getSegundoApellido())
+                    .fechaNacimiento(signin.getFechaNacimiento())
+                    .build());
+            loginRepository.saveUsuario(Usuario.builder()
+                    .id(idPersona)
+                    .idRol(1)
+                    .login(signin.getLogin())
+                    .password(signin.getPassword())
+                    .activo(true)
+                    .build());
+            return Either.right(true);
+        }
+        return resultado;
+    }
+
+    private boolean validateRN004(String login) {
+        var existe = loginDao.existLogin(login);
+        log.info("validateRN004: {} {}", login, existe);
+        return existe;
+    }
+
+    private boolean validateRN003(LocalDate fechaNacimiento) {
+        var now = LocalDate.now();
+        Period period = Period.between(fechaNacimiento, now);
+        log.info("validateRN003: {} {}",period.getYears(),period.getYears() > 18);
+        return period.getYears() > 18;
     }
 }

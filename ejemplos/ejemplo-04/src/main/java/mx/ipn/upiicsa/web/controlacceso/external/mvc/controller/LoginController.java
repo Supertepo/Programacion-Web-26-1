@@ -76,8 +76,20 @@ public class LoginController {
         }
         log.info("Valores del registro: {} {} {} {} {}", signinDto.getIdGenero(), signinDto.getNombre(),signinDto.getPrimerApellido(), signinDto.getSegundoApellido(), signinDto.getFechaNacimiento());
         if (!bindingResult.hasErrors()) {
-            loginService.signin(signinDto.toEntity());
-            resultado = "index";
+            var signinResultado = loginService.signin(signinDto.toEntity());
+            if(signinResultado.isRight()) {
+                model.addAttribute("signinSuccess", "El registro se realizó exitosamente");
+                model.addAttribute("loginDto", new LoginDto());
+                resultado = "index";
+            } else {
+                var errorCode = signinResultado.getLeft();
+                if(errorCode == 3) {
+                    bindingResult.rejectValue("fechaNacimiento","fechaNacimiento","El registro se permite sólo a mayores de edad");
+                } else if(errorCode == 4) {
+                    bindingResult.rejectValue("login","login","El login proporcionado ya se encuentra registrado y asociado a otra persona");
+                }
+                resultado = "signin";
+            }
         } else {
             resultado = "signin";
         }
